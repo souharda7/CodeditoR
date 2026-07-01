@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Terminal, Code2, Play, Loader2, LogOut, Keyboard } from 'lucide-react'
+import { Terminal, Code2, Play, Loader2, LogOut, Keyboard, Cpu, Sparkles } from 'lucide-react'
 import Editor from '@monaco-editor/react'
 
 axios.defaults.baseURL = 'https://codeditor-api.onrender.com'
@@ -156,146 +156,165 @@ export default function App() {
 
   if (token) {
     return (
-      <div className="h-screen bg-[#0A0A0C] text-zinc-300 flex flex-col overflow-hidden font-sans selection:bg-indigo-500/30">
-        <header className="bg-[#0E0E11]/80 backdrop-blur-xl border-b border-white/[0.04] px-6 py-3 flex justify-between items-center shrink-0 z-20">
-          <div className="flex items-center gap-4">
+      <div className="h-screen bg-[#030303] text-zinc-300 flex flex-col overflow-hidden font-sans selection:bg-indigo-500/30">
+        <header className="flex justify-between items-center shrink-0 px-6 py-5">
+          <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 p-1.5 rounded-lg border border-indigo-500/20 shadow-inner">
-                <Code2 size={18} className="text-indigo-400" />
+              <div className="bg-white/[0.03] p-2 rounded-xl border border-white/[0.05] shadow-inner flex items-center justify-center">
+                <Code2 size={20} className="text-zinc-100" />
               </div>
-              <h1 className="text-base font-semibold tracking-wide text-zinc-100">
+              <h1 className="text-lg font-medium tracking-wide text-zinc-100">
                 CodeditoR
               </h1>
             </div>
 
-            <div className="h-5 w-px bg-white/[0.08] mx-2"></div>
+            <div className="h-4 w-px bg-white/[0.08]"></div>
 
             <div className="relative group">
               <select
                 value={language}
                 onChange={handleLanguageChange}
-                className="appearance-none bg-[#18181B] border border-white/[0.08] text-sm text-zinc-300 rounded-lg pl-4 pr-10 py-1.5 cursor-pointer hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all shadow-sm"
+                className="appearance-none bg-transparent text-sm font-medium text-zinc-400 rounded-lg pl-3 pr-8 py-1.5 cursor-pointer hover:text-zinc-200 hover:bg-white/[0.02] focus:outline-none transition-all"
               >
-                <option value="python">Python 3.11</option>
-                <option value="cpp">C++ (g++)</option>
+                <option value="python" className="bg-[#09090B]">Python 3.11</option>
+                <option value="cpp" className="bg-[#09090B]">C++ (g++)</option>
               </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 group-hover:text-zinc-300 transition-colors">
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 group-hover:text-zinc-300 transition-colors">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
+            <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-500 px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.03]">
+              <Cpu size={12} className="text-emerald-400" />
+              Container Active
+            </div>
+            
             <button
               onClick={handleRunCode}
               disabled={isExecuting}
               title="Run Code"
-              className="bg-gradient-to-b from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 disabled:from-zinc-800 disabled:to-zinc-800 text-white disabled:text-zinc-500 font-medium px-6 py-1.5 rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.2)] hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] disabled:shadow-none border border-indigo-400/30 disabled:border-transparent transition-all flex items-center gap-2 text-sm"
+              className="group relative bg-zinc-100 hover:bg-white disabled:bg-zinc-800 text-zinc-900 disabled:text-zinc-500 font-semibold px-6 py-2 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] disabled:shadow-none transition-all flex items-center gap-2 text-sm overflow-hidden"
             >
+              {!isExecuting && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+              )}
               {isExecuting ? <Loader2 size={14} className="animate-spin" /> : <Play size={12} className="fill-current" />}
               {isExecuting ? 'Executing...' : 'Run Code'}
             </button>
-            <div className="h-5 w-px bg-white/[0.08]"></div>
+            
             <button
               onClick={handleLogout}
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-400/10 transition-all"
+              className="p-2 rounded-full text-zinc-500 hover:text-red-400 hover:bg-red-400/10 transition-all border border-transparent hover:border-red-400/20"
               title="Sign Out"
             >
-              <LogOut size={18} />
+              <LogOut size={16} />
             </button>
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col lg:flex-row min-h-0 bg-[#0A0A0C]">
-          <div className="flex-1 relative pt-4">
-            <Editor
-              height="100%"
-              language={language}
-              theme="vs-dark"
-              value={code}
-              onChange={(value) => setCode(value || '')}
-              onMount={(editor, monaco) => {
-                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-                  const runBtn = document.querySelector('button[title="Run Code"]');
-                  if (runBtn && !runBtn.disabled) {
-                    runBtn.click();
-                  }
-                });
-
-                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-                  const event = new KeyboardEvent('keydown', {
-                    key: 's',
-                    ctrlKey: true,
-                    metaKey: true,
-                    bubbles: true
+        <main className="flex-1 flex flex-col lg:flex-row gap-5 p-5 pt-0 min-h-0 max-w-[1920px] w-full mx-auto">
+          <div className="flex-1 relative bg-[#09090B] rounded-2xl border border-white/[0.04] overflow-hidden shadow-2xl flex flex-col backdrop-blur-3xl">
+            <div className="h-12 border-b border-white/[0.04] flex items-center px-4 bg-white/[0.01]">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/[0.03] border border-white/[0.02]">
+                <Sparkles size={12} className="text-indigo-400" />
+                <span className="text-xs font-medium text-zinc-300">
+                  main.{language === 'python' ? 'py' : 'cpp'}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex-1 relative py-4">
+              <Editor
+                height="100%"
+                language={language}
+                theme="elegant-dark"
+                value={code}
+                onChange={(value) => setCode(value || '')}
+                onMount={(editor, monaco) => {
+                  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+                    const runBtn = document.querySelector('button[title="Run Code"]');
+                    if (runBtn && !runBtn.disabled) {
+                      runBtn.click();
+                    }
                   });
-                  window.dispatchEvent(event);
-                });
 
-                monaco.editor.defineTheme('oceanic', {
-                  base: 'vs-dark',
-                  inherit: true,
-                  rules: [],
-                  colors: {
-                    'editor.background': '#0A0A0C',
-                    'editor.lineHighlightBackground': '#FFFFFF05',
-                    'editorLineNumber.foreground': '#FFFFFF20',
-                    'editorLineNumber.activeForeground': '#FFFFFF60',
-                    'editorIndentGuide.background': '#FFFFFF10',
-                    'editorIndentGuide.activeBackground': '#FFFFFF30',
+                  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+                    const event = new KeyboardEvent('keydown', {
+                      key: 's',
+                      ctrlKey: true,
+                      metaKey: true,
+                      bubbles: true
+                    });
+                    window.dispatchEvent(event);
+                  });
+
+                  monaco.editor.defineTheme('elegant-dark', {
+                    base: 'vs-dark',
+                    inherit: true,
+                    rules: [],
+                    colors: {
+                      'editor.background': '#09090B',
+                      'editor.lineHighlightBackground': '#FFFFFF05',
+                      'editorLineNumber.foreground': '#FFFFFF25',
+                      'editorLineNumber.activeForeground': '#FFFFFF70',
+                      'editorIndentGuide.background': '#FFFFFF10',
+                      'editorIndentGuide.activeBackground': '#FFFFFF30',
+                    }
+                  });
+                  monaco.editor.setTheme('elegant-dark');
+                }}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+                  fontLigatures: true,
+                  padding: { top: 0, bottom: 24 },
+                  scrollBeyondLastLine: false,
+                  smoothScrolling: true,
+                  lineNumbersMinChars: 4,
+                  lineDecorationsWidth: 12,
+                  cursorBlinking: "smooth",
+                  cursorSmoothCaretAnimation: "on",
+                  formatOnPaste: true,
+                  scrollbar: {
+                    verticalScrollbarSize: 8,
+                    horizontalScrollbarSize: 8,
+                    useShadows: false,
                   }
-                });
-                monaco.editor.setTheme('oceanic');
-              }}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
-                fontLigatures: true,
-                padding: { top: 8, bottom: 24 },
-                scrollBeyondLastLine: false,
-                smoothScrolling: true,
-                lineNumbersMinChars: 4,
-                lineDecorationsWidth: 12,
-                cursorBlinking: "smooth",
-                cursorSmoothCaretAnimation: "on",
-                formatOnPaste: true,
-                scrollbar: {
-                  verticalScrollbarSize: 10,
-                  horizontalScrollbarSize: 10,
-                  useShadows: false,
-                }
-              }}
-            />
+                }}
+              />
+            </div>
           </div>
 
-          <div className="w-full lg:w-[420px] xl:w-[480px] flex flex-col min-h-0 shrink-0 bg-[#0E0E11] border-l border-white/[0.04] shadow-2xl relative z-10">
-            <div className="flex flex-col h-[45%] border-b border-white/[0.04] bg-[#0A0A0C]/50">
-              <div className="px-5 py-3 flex items-center justify-between shrink-0 bg-white/[0.01] border-b border-white/[0.02]">
-                <div className="flex items-center gap-2">
+          <div className="w-full lg:w-[400px] xl:w-[460px] flex flex-col gap-5 min-h-0 shrink-0">
+            <div className="flex flex-col h-[35%] bg-[#09090B] rounded-2xl border border-white/[0.04] overflow-hidden shadow-2xl backdrop-blur-3xl">
+              <div className="px-5 py-3.5 flex items-center justify-between shrink-0 bg-white/[0.01] border-b border-white/[0.02]">
+                <div className="flex items-center gap-2.5">
                   <Keyboard size={14} className="text-zinc-500" />
-                  <span className="text-[11px] font-bold tracking-widest text-zinc-400 uppercase">Standard Input</span>
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase">Input</span>
                 </div>
               </div>
               <textarea
                 value={stdin}
                 onChange={(e) => setStdin(e.target.value)}
-                placeholder="Enter input values here..."
+                placeholder="Standard input arguments..."
                 className="w-full flex-1 bg-transparent px-5 py-4 font-mono text-[13px] leading-relaxed text-zinc-300 placeholder:text-zinc-700 resize-none focus:outline-none transition-colors"
                 spellCheck="false"
               />
             </div>
 
-            <div className="flex flex-col flex-1 min-h-0 bg-[#0A0A0C]/50">
-              <div className="px-5 py-3 flex items-center justify-between shrink-0 bg-white/[0.01] border-b border-white/[0.02]">
-                <div className="flex items-center gap-2">
+            <div className="flex flex-col flex-1 min-h-0 bg-[#09090B] rounded-2xl border border-white/[0.04] overflow-hidden shadow-2xl backdrop-blur-3xl">
+              <div className="px-5 py-3.5 flex items-center justify-between shrink-0 bg-white/[0.01] border-b border-white/[0.02]">
+                <div className="flex items-center gap-2.5">
                   <Terminal size={14} className="text-zinc-500" />
-                  <span className="text-[11px] font-bold tracking-widest text-zinc-400 uppercase">Output Console</span>
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase">Console</span>
                 </div>
               </div>
               <div className="px-5 py-4 flex-1 overflow-auto">
                 <pre className="font-mono text-[13px] text-zinc-300 whitespace-pre-wrap break-words leading-relaxed selection:bg-indigo-500/40">
-                  {output || <span className="text-zinc-700 italic">No output yet. Run your code to see results.</span>}
+                  {output || <span className="text-zinc-700 italic">Ready for execution.</span>}
                 </pre>
               </div>
             </div>
