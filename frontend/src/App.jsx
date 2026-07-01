@@ -191,7 +191,7 @@ export default function App() {
                 </div>
               </div>
               <div className="leading-tight">
-                <h1 className="text-[1.05rem] font-display italic tracking-wide text-[#F3F0EA]">
+                <h1 className="text-[1.05rem] font-display tracking-wide text-[#F3F0EA]">
                   CodeditoR
                 </h1>
                 <p className="text-[9px] font-ui font-semibold tracking-[0.28em] text-[#7F7A72] uppercase -mt-0.5">
@@ -377,7 +377,7 @@ export default function App() {
               </div>
             </div>
             <div className="leading-tight">
-              <h1 className="text-2xl font-display italic tracking-wide text-[#F3F0EA]">CodeditoR</h1>
+              <h1 className="text-2xl font-display tracking-wide text-[#F3F0EA]">CodeditoR</h1>
               <p className="text-[10px] font-ui font-semibold tracking-[0.3em] text-[#7F7A72] uppercase">Cloud Workspace</p>
             </div>
           </div>
